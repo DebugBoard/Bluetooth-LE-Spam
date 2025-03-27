@@ -11,7 +11,7 @@ While other apps are available that provide similar functionality, the objective
 
 #### [For Support, Join the Discord Server](https://discord.gg/x4e4Gma585)
 
- [!NOTE]
+!NOTE]
 > This project is not actively updated due to no further optimizations to the exploit.
 > Contributions from anyone are appreciated.   
 
