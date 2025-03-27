@@ -1,5 +1,7 @@
 # Bluetooth LE Spam [![Discord](https://img.shields.io/discord/1170266776731406386?label=Discord&link=https://discord.gg/x4e4Gma585)](https://discord.gg/x4e4Gma585)
 
+[![Downloads](https://img.shields.io/github/downloads/simondankelmann/Bluetooth-LE-Spam/total?style=plastic&logoSize=5)
+
 [<img src="https://f-droid.org/badge/get-it-on.png"
 alt="Get it on F-Droid"
 height="80">](https://f-droid.org/packages/de.simon.dankelmann.bluetoothlespam/)
@@ -10,7 +12,7 @@ While other apps are available that provide similar functionality, the objective
 
 #### [For Support, Join the Discord Server](https://discord.gg/x4e4Gma585)
 
-> [!NOTE]
+https://img.shields.io/github/downloads/simondankelmann/Bluetooth-LE-Spam/total?style=plastic&logoSize=5> [!NOTE]
 > This project is not actively updated due to no further optimizations to the exploit.
 > Contributions from anyone are appreciated.   
 
