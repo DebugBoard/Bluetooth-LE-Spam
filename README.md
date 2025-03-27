@@ -1,4 +1,4 @@
-# Bluetooth LE Spam [![Discord](https://img.shields.io/discord/1170266776731406386?label=Discord&link=https://discord.gg/x4e4Gma585)](https://discord.gg/x4e4Gma585) [![Downloads](https://img.shields.io/github/downloads/simondankelmann/Bluetooth-LE-Spam/total?style=plastic&logoSize=5)
+# Bluetooth LE Spam [![Discord](https://img.shields.io/discord/1170266776731406386?label=Discord&link=https://discord.gg/x4e4Gma585)](https://discord.gg/x4e4Gma585) ![Downloads](https://img.shields.io/github/downloads/simondankelmann/Bluetooth-LE-Spam/total?style=plastic&logoSize=5)
 
 
 [<img src="https://f-droid.org/badge/get-it-on.png"
