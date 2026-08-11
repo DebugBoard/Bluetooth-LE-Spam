@@ -181,14 +181,14 @@ class MainActivity : AppCompatActivity() {
                 // destinations" reading, kept as-is, plan §3) — everything else is a detail screen
                 // with its own back-button app bar.
                 val isTopLevel = currentRoute == null || currentRoute in topLevelRoutes
-                // Horizontal swipe cycles through these three tabs in order (Start has no swipe
-                // neighbor and isn't part of the cycle): swipe right moves forward (Settings ->
-                // Detector -> Advertising), swipe left moves back.
+                // Horizontal swipe cycles through all four tabs in order: swipe right moves
+                // forward (Settings -> Detector -> Advertising -> Info), swipe left moves back.
                 val swipeTabOrder = remember {
                     listOf(
                         SpecterDestinations.PREFERENCES,
                         SpecterDestinations.SPAM_DETECTOR,
                         SpecterDestinations.ADVERTISEMENT_COLLECTION,
+                        SpecterDestinations.START,
                     )
                 }
 
