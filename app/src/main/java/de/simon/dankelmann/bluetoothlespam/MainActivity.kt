@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,8 +30,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -47,6 +50,7 @@ import de.simon.dankelmann.bluetoothlespam.Helpers.LogFileManager
 import de.simon.dankelmann.bluetoothlespam.Helpers.QueueHandlerHelpers
 import de.simon.dankelmann.bluetoothlespam.Helpers.ThemeManager
 import de.simon.dankelmann.bluetoothlespam.Navigation.SpecterDestinations
+import de.simon.dankelmann.bluetoothlespam.Navigation.navigateToTopLevelTab
 import de.simon.dankelmann.bluetoothlespam.ui.advertisement.AdvertisementRoute
 import de.simon.dankelmann.bluetoothlespam.ui.advertisementcollection.AdvertisementCollectionRoute
 import de.simon.dankelmann.bluetoothlespam.ui.deviceselector.DeviceSelectorRoute
@@ -177,6 +181,16 @@ class MainActivity : AppCompatActivity() {
                 // destinations" reading, kept as-is, plan §3) — everything else is a detail screen
                 // with its own back-button app bar.
                 val isTopLevel = currentRoute == null || currentRoute in topLevelRoutes
+                // Horizontal swipe cycles through these three tabs in order (Start has no swipe
+                // neighbor and isn't part of the cycle): swipe right moves forward (Settings ->
+                // Detector -> Advertising), swipe left moves back.
+                val swipeTabOrder = remember {
+                    listOf(
+                        SpecterDestinations.PREFERENCES,
+                        SpecterDestinations.SPAM_DETECTOR,
+                        SpecterDestinations.ADVERTISEMENT_COLLECTION,
+                    )
+                }
 
                 LaunchedEffect(pendingDeepLinkDestination) {
                     pendingDeepLinkDestination?.let { destination ->
@@ -203,7 +217,27 @@ class MainActivity : AppCompatActivity() {
                                 .weight(1f)
                                 .fillMaxSize()
                                 .then(if (isTopLevel) Modifier.statusBarsPadding() else Modifier)
-                                .hazeSource(state = hazeState),
+                                .hazeSource(state = hazeState)
+                                .pointerInput(currentRoute) {
+                                    val tabIndex = swipeTabOrder.indexOf(currentRoute)
+                                    if (tabIndex == -1) return@pointerInput
+                                    val swipeThresholdPx = 72.dp.toPx()
+                                    var totalDrag = 0f
+                                    detectHorizontalDragGestures(
+                                        onDragEnd = {
+                                            if (totalDrag <= -swipeThresholdPx && tabIndex > 0) {
+                                                navController.navigateToTopLevelTab(swipeTabOrder[tabIndex - 1])
+                                            } else if (totalDrag >= swipeThresholdPx && tabIndex < swipeTabOrder.lastIndex) {
+                                                navController.navigateToTopLevelTab(swipeTabOrder[tabIndex + 1])
+                                            }
+                                            totalDrag = 0f
+                                        },
+                                        onDragCancel = { totalDrag = 0f },
+                                    ) { change, dragAmount ->
+                                        totalDrag += dragAmount
+                                        change.consume()
+                                    }
+                                },
                         ) {
                             NavHost(navController = navController, startDestination = SpecterDestinations.START) {
                                 composable(SpecterDestinations.START) {

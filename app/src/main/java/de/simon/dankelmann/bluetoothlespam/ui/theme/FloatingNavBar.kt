@@ -19,9 +19,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import de.simon.dankelmann.bluetoothlespam.Navigation.SpecterDestinations
+import de.simon.dankelmann.bluetoothlespam.Navigation.navigateToTopLevelTab
 import de.simon.dankelmann.bluetoothlespam.R
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
@@ -107,13 +107,7 @@ fun FloatingNavBar(
                         selected = selected,
                         onClick = {
                             if (!selected) {
-                                navController.navigate(destination.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
+                                navController.navigateToTopLevelTab(destination.route)
                             }
                         },
                         icon = {

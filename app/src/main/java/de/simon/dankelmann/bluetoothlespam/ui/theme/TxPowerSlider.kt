@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import de.simon.dankelmann.bluetoothlespam.Enums.TxPowerLevel
 import de.simon.dankelmann.bluetoothlespam.Enums.toStringId
+import kotlin.math.roundToInt
 
 private val txPowerLevels = listOf(
     TxPowerLevel.TX_POWER_ULTRA_LOW,
@@ -46,7 +47,11 @@ fun TxPowerSlider(
             valueRange = 0f..(txPowerLevels.size - 1).toFloat(),
             steps = txPowerLevels.size - 2,
             onValueChange = { newValue ->
-                val newIndex = newValue.toInt()
+                // roundToInt(), not toInt(): tick fractions like 1/3 aren't exact in float, so a
+                // snapped value can land at e.g. 0.99999994 — truncating would require dragging
+                // past the next tick before the index actually changes, making the slider feel
+                // like it lags/sticks.
+                val newIndex = newValue.roundToInt()
                 if (newIndex != index) {
                     index = newIndex
                     onLevelChanged(txPowerLevels[newIndex])
