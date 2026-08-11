@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import java.io.File
@@ -29,6 +30,8 @@ object SettingsKeys {
     val THEME_SEED_COLOR = intPreferencesKey("theme_seed_color")
     val DYNAMIC_COLOR_ENABLED = booleanPreferencesKey("dynamic_color_enabled")
     val BLUR_ENABLED = booleanPreferencesKey("blur_enabled")
+    val ANIMATIONS_ENABLED = booleanPreferencesKey("animations_enabled")
+    val ANIMATION_SPEED = floatPreferencesKey("animation_speed")
 }
 
 /**
@@ -123,6 +126,14 @@ class SettingsRepository private constructor(context: Context) {
         dataStore.edit { it[SettingsKeys.BLUR_ENABLED] = enabled }
     }
 
+    suspend fun setAnimationsEnabled(enabled: Boolean) {
+        dataStore.edit { it[SettingsKeys.ANIMATIONS_ENABLED] = enabled }
+    }
+
+    suspend fun setAnimationSpeed(speed: Float) {
+        dataStore.edit { it[SettingsKeys.ANIMATION_SPEED] = speed }
+    }
+
     /** Fire-and-forget variants for non-suspend call sites (e.g. [ThemeManager]) — launched on
      * this repository's own long-lived [scope] rather than each caller creating its own. */
     fun setThemeModeAsync(mode: String) {
@@ -139,6 +150,14 @@ class SettingsRepository private constructor(context: Context) {
 
     fun setBlurEnabledAsync(enabled: Boolean) {
         scope.launch { setBlurEnabled(enabled) }
+    }
+
+    fun setAnimationsEnabledAsync(enabled: Boolean) {
+        scope.launch { setAnimationsEnabled(enabled) }
+    }
+
+    fun setAnimationSpeedAsync(speed: Float) {
+        scope.launch { setAnimationSpeed(speed) }
     }
 
     companion object {

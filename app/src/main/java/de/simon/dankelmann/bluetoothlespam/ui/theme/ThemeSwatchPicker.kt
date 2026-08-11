@@ -2,6 +2,7 @@ package de.simon.dankelmann.bluetoothlespam.ui.theme
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -136,15 +137,22 @@ private fun SwatchSurface(
                 drawArc(color = tertiaryContainer, startAngle = 0f, sweepAngle = 180f, useCenter = true)
             }
 
-            val scale by animateFloatAsState(targetValue = if (isSelected) 1.1f else 1f, label = "swatch-scale")
+            val animationDurationMillis = LocalAnimationSettings.current.duration()
+            val scale by animateFloatAsState(
+                targetValue = if (isSelected) 1.1f else 1f,
+                animationSpec = tween(animationDurationMillis),
+                label = "swatch-scale",
+            )
             Box(
                 modifier = Modifier.graphicsLayer { scaleX = scale; scaleY = scale },
                 contentAlignment = Alignment.Center,
             ) {
                 AnimatedVisibility(
                     visible = isSelected,
-                    enter = fadeIn() + scaleIn(initialScale = 0.8f),
-                    exit = fadeOut() + scaleOut(targetScale = 0.8f),
+                    enter = fadeIn(animationSpec = tween(animationDurationMillis)) +
+                        scaleIn(initialScale = 0.8f, animationSpec = tween(animationDurationMillis)),
+                    exit = fadeOut(animationSpec = tween(animationDurationMillis)) +
+                        scaleOut(targetScale = 0.8f, animationSpec = tween(animationDurationMillis)),
                 ) {
                     Box(
                         modifier = Modifier
@@ -169,8 +177,10 @@ private fun SwatchSurface(
                 }
                 AnimatedVisibility(
                     visible = !isSelected,
-                    enter = fadeIn() + scaleIn(initialScale = 0.8f),
-                    exit = fadeOut() + scaleOut(targetScale = 0.8f),
+                    enter = fadeIn(animationSpec = tween(animationDurationMillis)) +
+                        scaleIn(initialScale = 0.8f, animationSpec = tween(animationDurationMillis)),
+                    exit = fadeOut(animationSpec = tween(animationDurationMillis)) +
+                        scaleOut(targetScale = 0.8f, animationSpec = tween(animationDurationMillis)),
                 ) {
                     centerContent()
                 }

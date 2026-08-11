@@ -10,6 +10,11 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -66,6 +71,7 @@ import de.simon.dankelmann.bluetoothlespam.Helpers.DatabaseHelpers
 import de.simon.dankelmann.bluetoothlespam.PermissionCheck.PermissionCheck
 import de.simon.dankelmann.bluetoothlespam.R
 import de.simon.dankelmann.bluetoothlespam.ui.theme.FloatingNavBarClearance
+import de.simon.dankelmann.bluetoothlespam.ui.theme.LocalAnimationSettings
 import de.simon.dankelmann.bluetoothlespam.ui.theme.LocalExtendedColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -431,7 +437,12 @@ private fun ExpandableSection(
     onToggle: () -> Unit,
     content: @Composable () -> Unit,
 ) {
-    val rotation by animateFloatAsState(targetValue = if (expanded) 180f else 0f, label = "chevron")
+    val animationDurationMillis = LocalAnimationSettings.current.duration()
+    val rotation by animateFloatAsState(
+        targetValue = if (expanded) 180f else 0f,
+        animationSpec = tween(animationDurationMillis),
+        label = "chevron",
+    )
 
     Column(modifier = Modifier.padding(top = 8.dp)) {
         Row(
@@ -452,7 +463,13 @@ private fun ExpandableSection(
                 modifier = Modifier.rotate(rotation),
             )
         }
-        AnimatedVisibility(visible = expanded) {
+        AnimatedVisibility(
+            visible = expanded,
+            enter = expandVertically(animationSpec = tween(animationDurationMillis)) +
+                fadeIn(animationSpec = tween(animationDurationMillis)),
+            exit = shrinkVertically(animationSpec = tween(animationDurationMillis)) +
+                fadeOut(animationSpec = tween(animationDurationMillis)),
+        ) {
             Column { content() }
         }
     }

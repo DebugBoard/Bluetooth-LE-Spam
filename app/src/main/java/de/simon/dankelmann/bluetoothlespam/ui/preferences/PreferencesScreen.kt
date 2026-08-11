@@ -14,6 +14,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +29,7 @@ import de.simon.dankelmann.bluetoothlespam.ui.theme.FloatingNavBarClearance
 import de.simon.dankelmann.bluetoothlespam.ui.theme.ThemeModeOption
 import de.simon.dankelmann.bluetoothlespam.ui.theme.ThemeModePicker
 import de.simon.dankelmann.bluetoothlespam.ui.theme.ThemeSwatchPicker
+import kotlin.math.roundToInt
 
 /**
  * Hand-rolled replacement for `PreferenceFragmentCompat` (plan §5/§11 — no Compose equivalent
@@ -48,6 +50,10 @@ fun PreferencesScreen(
     onDynamicColorEnabledChanged: (Boolean) -> Unit,
     blurEnabled: Boolean,
     onBlurEnabledChanged: (Boolean) -> Unit,
+    animationsEnabled: Boolean,
+    onAnimationsEnabledChanged: (Boolean) -> Unit,
+    animationSpeed: Float,
+    onAnimationSpeedChanged: (Float) -> Unit,
     useLegacyAdvertising: Boolean,
     onUseLegacyAdvertisingChanged: (Boolean) -> Unit,
     advertisingIntervalMs: String,
@@ -84,6 +90,23 @@ fun PreferencesScreen(
                 summary = "Frosted-glass backdrop behind the floating navigation bar",
                 checked = blurEnabled,
                 onCheckedChange = onBlurEnabledChanged,
+            )
+        }
+
+        item { SectionHeader("Animations") }
+        item {
+            SwitchRow(
+                title = "Enable Animations",
+                summary = "Screen transitions, fades, and other UI motion",
+                checked = animationsEnabled,
+                onCheckedChange = onAnimationsEnabledChanged,
+            )
+        }
+        item {
+            AnimationSpeedRow(
+                speed = animationSpeed,
+                enabled = animationsEnabled,
+                onSpeedChanged = onAnimationSpeedChanged,
             )
         }
 
@@ -217,6 +240,33 @@ private fun ClickRow(title: String, onClick: () -> Unit, iconRes: Int? = null) {
                 )
             }
             Text(text = title, style = MaterialTheme.typography.titleMedium)
+        }
+    }
+}
+
+private val animationSpeedSteps = listOf(0.5f, 1f, 1.5f, 2f)
+
+@Composable
+private fun AnimationSpeedRow(speed: Float, enabled: Boolean, onSpeedChanged: (Float) -> Unit) {
+    val index = animationSpeedSteps.indices.minByOrNull { i -> kotlin.math.abs(animationSpeedSteps[i] - speed) } ?: 1
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = "Animation Speed: %.1fx".format(animationSpeedSteps[index]),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Slider(
+                value = index.toFloat(),
+                onValueChange = { newValue ->
+                    val newIndex = newValue.roundToInt()
+                    if (newIndex != index) {
+                        onSpeedChanged(animationSpeedSteps[newIndex])
+                    }
+                },
+                valueRange = 0f..(animationSpeedSteps.size - 1).toFloat(),
+                steps = animationSpeedSteps.size - 2,
+                enabled = enabled,
+            )
         }
     }
 }

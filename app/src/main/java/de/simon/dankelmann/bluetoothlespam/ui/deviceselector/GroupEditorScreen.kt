@@ -1,6 +1,7 @@
 package de.simon.dankelmann.bluetoothlespam.ui.deviceselector
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,7 @@ import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.unit.dp
 import de.simon.dankelmann.bluetoothlespam.Database.Dao.CollectionWithLists
 import de.simon.dankelmann.bluetoothlespam.Database.Entities.AdvertisementSetListEntity
+import de.simon.dankelmann.bluetoothlespam.ui.theme.LocalAnimationSettings
 
 /**
  * Group Editor (plan §8) — pick lists from any existing collection (built-in or custom) to
@@ -117,7 +119,11 @@ private fun CollectionRow(
         ToggleableState.Indeterminate -> "Partially selected"
         ToggleableState.Off -> "Not selected"
     }
-    val rotation by animateFloatAsState(targetValue = if (expanded) 180f else 0f, label = "chevron")
+    val rotation by animateFloatAsState(
+        targetValue = if (expanded) 180f else 0f,
+        animationSpec = tween(LocalAnimationSettings.current.duration()),
+        label = "chevron",
+    )
 
     Column {
         Row(

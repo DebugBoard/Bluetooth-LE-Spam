@@ -2,6 +2,7 @@ package de.simon.dankelmann.bluetoothlespam.ui.advertisement
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -60,6 +61,7 @@ import de.simon.dankelmann.bluetoothlespam.Enums.getDrawableId
 import de.simon.dankelmann.bluetoothlespam.Models.AdvertisementSet
 import de.simon.dankelmann.bluetoothlespam.Models.AdvertisementSetList
 import de.simon.dankelmann.bluetoothlespam.R
+import de.simon.dankelmann.bluetoothlespam.ui.theme.LocalAnimationSettings
 import de.simon.dankelmann.bluetoothlespam.ui.theme.LocalExtendedColors
 import de.simon.dankelmann.bluetoothlespam.ui.theme.StatusBadge
 import de.simon.dankelmann.bluetoothlespam.ui.theme.StatusTone
@@ -294,7 +296,11 @@ private fun GroupHeaderRow(
     onToggleExpanded: () -> Unit,
     onGroupCheckedChanged: (Boolean) -> Unit,
 ) {
-    val rotation by animateFloatAsState(targetValue = if (expanded) 180f else 0f, label = "chevron")
+    val rotation by animateFloatAsState(
+        targetValue = if (expanded) 180f else 0f,
+        animationSpec = tween(LocalAnimationSettings.current.duration()),
+        label = "chevron",
+    )
     val checkedCount = list.advertisementSets.count { it.isChecked }
     val checkedState = when {
         checkedCount == 0 -> ToggleableState.Off

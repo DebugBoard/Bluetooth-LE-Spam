@@ -7,6 +7,9 @@ import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -21,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -59,7 +63,9 @@ import de.simon.dankelmann.bluetoothlespam.ui.preferences.PreferencesRoute
 import de.simon.dankelmann.bluetoothlespam.ui.quickstart.ManageQuickStartRoute
 import de.simon.dankelmann.bluetoothlespam.ui.spamDetector.SpamDetectorRoute
 import de.simon.dankelmann.bluetoothlespam.ui.start.StartRoute
+import de.simon.dankelmann.bluetoothlespam.ui.theme.AnimationSettings
 import de.simon.dankelmann.bluetoothlespam.ui.theme.FloatingNavBar
+import de.simon.dankelmann.bluetoothlespam.ui.theme.LocalAnimationSettings
 import de.simon.dankelmann.bluetoothlespam.ui.theme.SpecterTheme
 import de.simon.dankelmann.bluetoothlespam.ui.theme.TxPowerSlider
 import dev.chrisbanes.haze.HazeState
@@ -170,8 +176,13 @@ class MainActivity : AppCompatActivity() {
             val settings by settingsRepository.preferencesFlow.collectAsState()
             val dynamicColorEnabled = settings[SettingsKeys.DYNAMIC_COLOR_ENABLED] ?: true
             val blurEnabled = settings[SettingsKeys.BLUR_ENABLED] ?: true
+            val animationSettings = AnimationSettings(
+                enabled = settings[SettingsKeys.ANIMATIONS_ENABLED] ?: true,
+                speedMultiplier = settings[SettingsKeys.ANIMATION_SPEED] ?: 1f,
+            )
 
             SpecterTheme(seedColorArgb = seedColorArgb, amoled = oledActive, dynamicColor = dynamicColorEnabled) {
+              CompositionLocalProvider(LocalAnimationSettings provides animationSettings) {
                 val hazeState = remember { HazeState() }
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -239,7 +250,15 @@ class MainActivity : AppCompatActivity() {
                                     }
                                 },
                         ) {
-                            NavHost(navController = navController, startDestination = SpecterDestinations.START) {
+                            val navAnimationDurationMillis = LocalAnimationSettings.current.duration()
+                            NavHost(
+                                navController = navController,
+                                startDestination = SpecterDestinations.START,
+                                enterTransition = { fadeIn(animationSpec = tween(navAnimationDurationMillis)) },
+                                exitTransition = { fadeOut(animationSpec = tween(navAnimationDurationMillis)) },
+                                popEnterTransition = { fadeIn(animationSpec = tween(navAnimationDurationMillis)) },
+                                popExitTransition = { fadeOut(animationSpec = tween(navAnimationDurationMillis)) },
+                            ) {
                                 composable(SpecterDestinations.START) {
                                     StartRoute(
                                         onNavigateToAdvertisement = { navController.navigate(SpecterDestinations.ADVERTISEMENT) },
@@ -282,6 +301,7 @@ class MainActivity : AppCompatActivity() {
                         )
                     }
                 }
+              }
             }
         }
     }

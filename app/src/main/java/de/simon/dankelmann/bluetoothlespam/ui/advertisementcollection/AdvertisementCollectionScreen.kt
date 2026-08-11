@@ -1,6 +1,7 @@
 package de.simon.dankelmann.bluetoothlespam.ui.advertisementcollection
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import de.simon.dankelmann.bluetoothlespam.ui.theme.FloatingNavBarClearance
+import de.simon.dankelmann.bluetoothlespam.ui.theme.LocalAnimationSettings
 
 /** One selectable attack profile card on the Advertisement Collection screen. */
 data class AdvertisementCollectionItem(
@@ -111,7 +113,11 @@ fun AdvertisementCollectionScreen(
 
 @Composable
 private fun CategoryHeaderRow(title: String, expanded: Boolean, onToggle: () -> Unit) {
-    val rotation by animateFloatAsState(targetValue = if (expanded) 180f else 0f, label = "chevron")
+    val rotation by animateFloatAsState(
+        targetValue = if (expanded) 180f else 0f,
+        animationSpec = tween(LocalAnimationSettings.current.duration()),
+        label = "chevron",
+    )
     Row(
         modifier = Modifier
             .fillMaxWidth()
